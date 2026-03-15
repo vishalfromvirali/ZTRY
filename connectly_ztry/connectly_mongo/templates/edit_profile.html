@@ -1,0 +1,80 @@
+{% extends 'base.html' %}
+{% block title %}Edit Profile — ZTRY{% endblock %}
+{% block content %}
+<style>
+.edit-wrap { max-width: 580px; margin: 0 auto; padding: 8px 4px 32px; }
+.edit-grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 12px; }
+@media(max-width: 480px) {
+  .edit-grid-2 { grid-template-columns: 1fr; }
+}
+</style>
+<div class="ccon">
+<div class="edit-wrap">
+  <h1 style="font-size:20px;font-weight:700;color:var(--t1);letter-spacing:-.3px;margin-bottom:4px">Edit Profile</h1>
+  <p style="color:var(--t3);font-size:13px;margin-bottom:16px">Update your information</p>
+
+  <!-- Banner/Avatar preview -->
+  <div style="margin-bottom:16px;position:relative">
+    <div id="bw" style="height:140px;border-radius:10px;overflow:hidden;cursor:pointer;position:relative;box-shadow:var(--sh1)" onclick="document.getElementById('bi').click()">
+      {% if user.banner_picture %}
+        <img id="bimg" src="/static/uploads/banners/{{ user.banner_picture }}" style="width:100%;height:100%;object-fit:cover">
+      {% else %}
+        <div style="width:100%;height:100%;background:var(--t1);position:relative;overflow:hidden">
+          <div style="position:absolute;inset:0;background-image:linear-gradient(rgba(255,255,255,.04) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.04) 1px,transparent 1px);background-size:32px 32px"></div>
+          <div style="position:absolute;top:0;left:0;right:0;height:3px;background:var(--red)"></div>
+        </div>
+        <img id="bimg" style="display:none;width:100%;height:100%;object-fit:cover;position:absolute;inset:0">
+      {% endif %}
+      <div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;background:rgba(0,0,0,.28);transition:opacity .2s" onmouseenter="this.style.opacity='1'" onmouseleave="this.style.opacity='.7'">
+        <span style="color:white;font-size:12px;font-weight:600;background:rgba(0,0,0,.4);padding:5px 12px;border-radius:6px">📸 Change Banner</span>
+      </div>
+    </div>
+    <div style="position:absolute;bottom:-26px;left:16px;cursor:pointer" onclick="document.getElementById('ai2').click()">
+      <div style="width:62px;height:62px;border-radius:50%;border:4px solid var(--bg);box-shadow:var(--sh2);overflow:hidden;background:var(--t1);position:relative" onmouseenter="document.getElementById('ao').style.opacity='1'" onmouseleave="document.getElementById('ao').style.opacity='0'">
+        {% if user.profile_picture %}
+          <img id="aimg" src="/static/uploads/profiles/{{ user.profile_picture }}" style="width:100%;height:100%;object-fit:cover">
+        {% else %}
+          <div class="av av1" style="width:100%;height:100%;font-size:18px;border-radius:0">{{ user.username[0].upper() }}</div>
+          <img id="aimg" style="display:none;position:absolute;inset:0;width:100%;height:100%;object-fit:cover;border-radius:50%">
+        {% endif %}
+        <div id="ao" style="position:absolute;inset:0;background:rgba(0,0,0,.42);display:flex;align-items:center;justify-content:center;opacity:0;transition:opacity .2s;font-size:12px;color:white">📷</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card" style="padding:20px;margin-top:32px">
+    <form method="POST" action="{{ url_for('users.edit_profile') }}" enctype="multipart/form-data">
+      <input type="file" name="profile_picture" id="ai2" accept="image/*" style="display:none" onchange="prevAv(this)">
+      <input type="file" name="banner_picture"  id="bi"  accept="image/*" style="display:none" onchange="prevBan(this)">
+      <div class="edit-grid-2">
+        <div><label class="lbl">Username</label><input name="username" type="text" value="{{ user.username }}" class="inp" required></div>
+        <div><label class="lbl">Location</label><input name="location" type="text" value="{{ user.location or '' }}" class="inp" placeholder="City, Country"></div>
+      </div>
+      <div style="margin-bottom:12px"><label class="lbl">Bio</label><textarea name="bio" class="inp" style="min-height:80px;resize:none" placeholder="Tell people about yourself…">{{ user.bio or '' }}</textarea></div>
+      <div class="edit-grid-2">
+        <div><label class="lbl">Gender</label><select name="gender" class="inp"><option value="">Prefer not to say</option>{% for g in ['Male','Female','Non-binary','Other'] %}<option value="{{ g.lower() }}" {% if user.gender and user.gender.lower()==g.lower() %}selected{% endif %}>{{ g }}</option>{% endfor %}</select></div>
+        <div><label class="lbl">Goal</label><select name="relationship_goal" class="inp"><option value="">Not set</option>{% for g in ['Networking','Friendship','Collaboration','Study partner'] %}<option value="{{ g.lower() }}" {% if user.relationship_goal and user.relationship_goal.lower()==g.lower() %}selected{% endif %}>{{ g }}</option>{% endfor %}</select></div>
+      </div>
+      <div class="edit-grid-2">
+        <div><label class="lbl">Study / Work</label><input name="study_field" type="text" value="{{ user.study_field or '' }}" class="inp" placeholder="Computer Science…"></div>
+        <div><label class="lbl">Website</label><input name="website" type="text" value="{{ user.website or '' }}" class="inp" placeholder="https://yoursite.com"></div>
+      </div>
+      <div style="margin-bottom:18px">
+        <label class="lbl">Interests <span style="color:var(--t4);font-size:11px;font-weight:400;text-transform:none;letter-spacing:0">(comma-separated)</span></label>
+        <input name="interests_text" type="text" value="{{ (user.interests or [])|join(', ') }}" class="inp" placeholder="AI, design, music, travel…">
+      </div>
+      <div style="display:flex;gap:8px;justify-content:flex-end">
+        <a href="{{ url_for('users.profile', user_id=user._id) }}" class="btn btn-s btn-sm">Cancel</a>
+        <button type="submit" class="btn btn-p btn-sm">Save Changes</button>
+      </div>
+    </form>
+  </div>
+</div>
+</div>
+{% endblock %}
+{% block scripts %}
+<script>
+function prevAv(i){const f=i.files[0];if(!f)return;const img=document.getElementById('aimg');img.src=URL.createObjectURL(f);img.style.display='block';const fb=img.previousElementSibling;if(fb&&fb.classList.contains('av'))fb.style.display='none';}
+function prevBan(i){const f=i.files[0];if(!f)return;const img=document.getElementById('bimg');img.src=URL.createObjectURL(f);img.style.display='block';}
+</script>
+{% endblock %}

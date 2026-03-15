@@ -1,0 +1,22 @@
+services:
+  - type: web
+    name: ztry-app
+    runtime: python
+    rootDir: connectly_mongo
+    buildCommand: pip install -r requirements.txt
+    startCommand: gunicorn --config gunicorn_config.py "app:create_app('production')"
+    envVars:
+      - key: SECRET_KEY
+        generateValue: true
+      - key: MONGO_URI
+        sync: false          # Set this manually in Render dashboard — your Atlas URI
+      - key: PYTHON_VERSION
+        value: 3.11.0
+      - key: GROQ_API_KEY
+        sync: false          # Optional — free AI at console.groq.com
+      - key: GEMINI_API_KEY
+        sync: false          # Optional — free AI at aistudio.google.com
+    disk:
+      name: uploads
+      mountPath: /opt/render/project/src/connectly_mongo/static/uploads
+      sizeGB: 1

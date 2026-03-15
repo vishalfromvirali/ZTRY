@@ -1,0 +1,1 @@
+web: gunicorn --config connectly_mongo/gunicorn_config.py "connectly_mongo.app:create_app('production')"

@@ -1,0 +1,363 @@
+{% extends 'base.html' %}
+{% block title %}Feed — ZTRY{% endblock %}
+{% block content %}
+<div class="ccon" style="padding-bottom:32px">
+<div class="c-layout">
+
+<!-- ═══ LEFT SIDEBAR ═══ -->
+<div>
+  <div class="lnav">
+    <!-- Profile mini card -->
+    <div class="card" style="padding:16px;margin-bottom:16px">
+      <div style="display:flex;align-items:center;gap:12px">
+        {% if current_user.profile_picture %}
+          <div style="position:relative;width:40px;height:40px;flex-shrink:0">
+            <img src="/static/uploads/profiles/{{ current_user.profile_picture }}"
+                 alt="{{ current_user.username[0].upper() }}"
+                 style="width:40px;height:40px;border-radius:50%;object-fit:cover;border:1px solid var(--bdr);display:block"
+                 onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">
+            <div class="av av1" style="display:none;width:40px;height:40px;font-size:14px;position:absolute;top:0;left:0">{{ current_user.username[0].upper() }}</div>
+          </div>
+        {% else %}
+          <div class="av av1" style="width:40px;height:40px;font-size:14px;flex-shrink:0">{{ current_user.username[0].upper() }}</div>
+        {% endif %}
+        <div style="min-width:0">
+          <div style="font-size:14px;font-weight:600;color:var(--t1);overflow:hidden;text-overflow:ellipsis;white-space:nowrap">{{ current_user.username }}</div>
+          <div style="font-size:12px;color:var(--t4)">{{ current_user.relationship_goal or 'ZTRY Member' }}</div>
+        </div>
+        <div style="width:8px;height:8px;border-radius:50%;background:var(--green);margin-left:auto;flex-shrink:0"></div>
+      </div>
+    </div>
+
+    <a href="{{ url_for('main.home') }}" class="lnav-item active">
+      <div class="lnav-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/></svg></div>Feed
+    </a>
+    <a href="{{ url_for('users.explore') }}" class="lnav-item">
+      <div class="lnav-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg></div>Explore
+    </a>
+    <a href="{{ url_for('chat.messages') }}" class="lnav-item">
+      <div class="lnav-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2z"/></svg></div>Messages
+    </a>
+    <a href="{{ url_for('main.notifications') }}" class="lnav-item">
+      <div class="lnav-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M12 22c1.1 0 2-.9 2-2h-4c0 1.1.9 2 2 2zm6-6V11c0-3.07-1.64-5.64-4.5-6.32V4c0-.83-.67-1.5-1.5-1.5S10 3.17 10 4v.68C7.63 5.36 6 7.92 6 11v5l-2 2v1h16v-1l-2-2z"/></svg></div>Alerts
+    </a>
+    <a href="{{ url_for('users.profile', user_id=current_user.id) }}" class="lnav-item">
+      <div class="lnav-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg></div>Profile
+    </a>
+
+    <a href="{{ url_for('main.create_post') }}" class="btn btn-p" style="width:100%;justify-content:center;margin-top:16px;border-radius:8px;font-size:14px">
+      <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor"><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/></svg>Create Post
+    </a>
+
+    <!-- AI Panel teaser -->
+    <div style="margin-top:16px;padding:14px;background:var(--bg3);border-radius:8px;border:1px solid var(--bdr)">
+      <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px">
+        <div style="width:24px;height:24px;background:var(--t1);border-radius:6px;display:flex;align-items:center;justify-content:center">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
+        </div>
+        <span style="font-size:12px;font-weight:600;color:var(--t1)">ZTRY AI</span>
+        <span style="font-size:10px;background:var(--red);color:white;padding:1px 6px;border-radius:4px;font-weight:600">LIVE</span>
+      </div>
+      <p style="font-size:12px;color:var(--t3);line-height:1.5;margin-bottom:10px">Your AI communication assistant. Type @ztry in any chat.</p>
+      <a href="{{ url_for('chat.messages') }}" style="font-size:12px;color:var(--red);font-weight:600;text-decoration:none">Start chatting →</a>
+    </div>
+
+    <div style="margin-top:16px;padding-top:16px;border-top:1px solid var(--bdr)">
+      <a href="{{ url_for('auth.logout') }}" class="lnav-item" style="color:var(--t4)">
+        <div class="lnav-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M17 7l-1.41 1.41L18.17 11H8v2h10.17l-2.58 2.58L17 17l5-5zM4 5h8V3H4c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h8v-2H4V5z"/></svg></div>Sign Out
+      </a>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ CENTER FEED ═══ -->
+<div>
+  <!-- Stories -->
+  <div class="card" style="padding:16px;margin-bottom:16px">
+    <div class="section-title">Stories</div>
+    <div style="display:flex;gap:16px;overflow-x:auto;padding-bottom:4px;scrollbar-width:none">
+      <div class="story-wrap" onclick="document.getElementById('story-input').click()">
+        <div class="story-add">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+        </div>
+        <span class="story-name">Add Story</span>
+      </div>
+      <form id="story-form" method="POST" action="{{ url_for('main.create_story') }}" enctype="multipart/form-data" style="display:none">
+        <input type="file" id="story-input" name="story_media" accept="image/*,video/*" onchange="document.getElementById('story-form').submit()">
+      </form>
+      {% for story in (active_stories or []) %}
+      <div class="story-wrap" onclick="openStory('{{ story._id }}','{{ story.media_url }}','{{ story.media_type }}','{{ story.username }}','{{ story.user_pic or '' }}','{{ story.caption or '' }}')">
+        <div class="story-ring {% if story.seen %}seen{% endif %}">
+          <div class="story-inner" id="si-{{ loop.index }}">
+            {# Show the story media as thumbnail (the actual image they posted) #}
+            {% if story.media_url and story.media_type != 'video' %}
+              <img src="/static/uploads/stories/{{ story.media_url }}"
+                   alt="{{ story.username[0].upper() }}"
+                   style="width:100%;height:100%;object-fit:cover;border-radius:50%;display:block"
+                   onerror="this.style.display='none';document.getElementById('sfb-{{ loop.index }}').style.display='flex'">
+              <div id="sfb-{{ loop.index }}" style="display:none;width:100%;height:100%;align-items:center;justify-content:center;background:#111827;color:white;font-size:20px;font-weight:700;border-radius:50%;flex-shrink:0">{{ story.username[0].upper() }}</div>
+            {% elif story.media_url and story.media_type == 'video' %}
+              {# Video story: show play icon over dark bg with initial #}
+              <div style="display:flex;width:100%;height:100%;align-items:center;justify-content:center;background:#111827;color:white;font-size:20px;font-weight:700;border-radius:50%;position:relative;flex-direction:column;gap:2px">
+                {{ story.username[0].upper() }}
+                <svg width="10" height="10" viewBox="0 0 24 24" fill="white" style="opacity:.7"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+              </div>
+            {% elif story.user_pic %}
+              <img src="/static/uploads/profiles/{{ story.user_pic }}"
+                   alt="{{ story.username[0].upper() }}"
+                   style="width:100%;height:100%;object-fit:cover;border-radius:50%;display:block"
+                   onerror="this.style.display='none';document.getElementById('sfb-{{ loop.index }}').style.display='flex'">
+              <div id="sfb-{{ loop.index }}" style="display:none;width:100%;height:100%;align-items:center;justify-content:center;background:#111827;color:white;font-size:20px;font-weight:700;border-radius:50%">{{ story.username[0].upper() }}</div>
+            {% else %}
+              <div style="display:flex;width:100%;height:100%;align-items:center;justify-content:center;background:#111827;color:white;font-size:20px;font-weight:700;border-radius:50%">{{ story.username[0].upper() }}</div>
+            {% endif %}
+          </div>
+        </div>
+        <span class="story-name">{{ story.username }}</span>
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+
+  <!-- Compose box -->
+  <div class="card" style="padding:16px;margin-bottom:16px">
+    <div style="display:flex;align-items:center;gap:12px;margin-bottom:12px">
+      {% if current_user.profile_picture %}
+        <div style="position:relative;width:40px;height:40px;flex-shrink:0">
+          <img src="/static/uploads/profiles/{{ current_user.profile_picture }}"
+               alt="{{ current_user.username[0].upper() }}"
+               data-initial="{{ current_user.username[0].upper() }}"
+               style="width:40px;height:40px;border-radius:50%;object-fit:cover;border:1px solid var(--bdr);display:block"
+               onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">
+          <div style="display:none;width:40px;height:40px;border-radius:50%;background:#111827;color:white;font-size:14px;font-weight:700;align-items:center;justify-content:center;position:absolute;top:0;left:0">{{ current_user.username[0].upper() }}</div>
+        </div>
+      {% else %}
+        <div class="av av1" style="width:40px;height:40px;font-size:14px;flex-shrink:0">{{ current_user.username[0].upper() }}</div>
+      {% endif %}
+      <a href="{{ url_for('main.create_post') }}" style="flex:1;background:var(--bg3);border:1px solid var(--bdr);border-radius:8px;padding:10px 14px;font-size:14px;color:var(--t4);text-decoration:none;display:block;transition:all .2s" onmouseenter="this.style.borderColor='var(--bdr2)';this.style.background='var(--bg4)'" onmouseleave="this.style.borderColor='var(--bdr)';this.style.background='var(--bg3)'">What's on your mind?</a>
+    </div>
+    <div style="display:flex;gap:4px;border-top:1px solid var(--bdr);padding-top:12px">
+      <a href="{{ url_for('main.create_post') }}" class="post-act like" style="flex:1;border-radius:6px;text-decoration:none;font-size:13px">
+        <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>Photo
+      </a>
+      <a href="{{ url_for('main.create_post') }}" class="post-act comment" style="flex:1;border-radius:6px;text-decoration:none;font-size:13px">
+        <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polygon points="23 7 16 12 23 17 23 7"/><rect x="1" y="5" width="15" height="14" rx="2"/></svg>Video
+      </a>
+      <a href="{{ url_for('main.create_post') }}" class="post-act share" style="flex:1;border-radius:6px;text-decoration:none;font-size:13px">
+        <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>Article
+      </a>
+    </div>
+  </div>
+
+  <!-- POSTS -->
+  {% if posts %}
+    {% for post in posts %}
+    <div class="post-card fu" style="margin-bottom:16px;animation-delay:{{ loop.index0 * 0.05 }}s" id="post-{{ post._id }}">
+      <!-- Header -->
+      <div style="display:flex;align-items:center;gap:12px;padding:16px 16px 12px">
+        <a href="{{ url_for('users.profile', user_id=post.user_id) }}" style="text-decoration:none;flex-shrink:0">
+          {% if post.user_pic %}
+            <div style="position:relative;width:40px;height:40px">
+              <img src="/static/uploads/profiles/{{ post.user_pic }}"
+                   alt="{{ (post.username or '?')[0].upper() }}"
+                   data-initial="{{ (post.username or '?')[0].upper() }}"
+                   style="width:40px;height:40px;border-radius:50%;object-fit:cover;border:1px solid var(--bdr);display:block"
+                   onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">
+              <div class="av av{{ (loop.index%5)+1 }}" style="width:40px;height:40px;font-size:14px;display:none;position:absolute;top:0;left:0">{{ (post.username or '?')[0].upper() }}</div>
+            </div>
+          {% else %}
+            <div class="av av{{ (loop.index%5)+1 }}" style="width:40px;height:40px;font-size:14px">{{ (post.username or '?')[0].upper() }}</div>
+          {% endif %}
+        </a>
+        <div style="flex:1;min-width:0">
+          <a href="{{ url_for('users.profile', user_id=post.user_id) }}" style="font-size:14px;font-weight:600;color:var(--t1);text-decoration:none">{{ post.username or 'Unknown' }}</a>
+          <div style="font-size:12px;color:var(--t4)">{% if post.timestamp and post.timestamp.strftime is defined %}{{ post.timestamp.strftime('%b %d · %H:%M') }}{% endif %}</div>
+        </div>
+        {% if post.user_id == current_user.id %}
+        <button onclick="delPost('{{ post._id }}')" style="background:none;border:none;color:var(--t5);cursor:pointer;padding:4px 6px;border-radius:6px;font-size:12px;transition:all .18s" onmouseenter="this.style.color='var(--red)';this.style.background='var(--red-bg)'" onmouseleave="this.style.color='var(--t5)';this.style.background=''">✕</button>
+        {% endif %}
+      </div>
+
+      {% if post.content %}
+      <div style="padding:0 16px {% if not post.media_url %}16px{% else %}8px{% endif %}">
+        <p style="color:var(--t2);line-height:1.65;font-size:15px">{{ post.content }}</p>
+      </div>
+      {% endif %}
+
+      {% if post.media_url %}
+        {% if post.media_type == 'video' %}
+          <video controls preload="metadata" style="width:100%;max-height:480px;object-fit:contain;background:var(--t1);display:block;margin-top:{% if post.content %}8px{% else %}0{% endif %}"><source src="/static/uploads/posts/{{ post.media_url }}"></video>
+        {% else %}
+          <img src="/static/uploads/posts/{{ post.media_url }}" style="width:100%;max-height:520px;object-fit:cover;display:block;margin-top:{% if post.content %}8px{% else %}0{% endif %}" loading="lazy" onerror="this.style.display='none'">
+        {% endif %}
+      {% endif %}
+
+      <!-- Stats -->
+      <div style="display:flex;align-items:center;padding:8px 16px;gap:8px;font-size:13px;color:var(--t4);border-top:1px solid var(--bdr);margin-top:{% if not post.media_url %}4px{% else %}0{% endif %}">
+        <span id="lc-{{ post._id }}">{% if post.likes and post.likes|length > 0 %}<span style="color:var(--red)">♥</span> {{ post.likes|length }}{% endif %}</span>
+        {% if post.comments and post.comments|length > 0 %}<span style="margin-left:auto">{{ post.comments|length }} comment{{ 's' if post.comments|length != 1 }}</span>{% endif %}
+      </div>
+
+      <!-- Actions -->
+      <div style="display:flex;border-top:1px solid var(--bdr)">
+        <div class="p-wrap" style="flex:1;display:flex">
+          <button onclick="likePost('{{ post._id }}',this);spawnParticles(this)" class="post-act like"
+            style="color:{% if current_user.id in (post.likes or []) %}var(--red){% else %}var(--t3){% endif %}">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="{% if current_user.id in (post.likes or []) %}currentColor{% else %}none{% endif %}" stroke="currentColor" stroke-width="2"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
+            <span class="like-num">{{ (post.likes or [])|length }}</span>
+          </button>
+        </div>
+        <button onclick="toggleComments('{{ post._id }}')" class="post-act comment">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+          <span>{{ (post.comments or [])|length }}</span>
+        </button>
+        <button class="post-act share">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>
+          Share
+        </button>
+      </div>
+
+      <!-- Comments -->
+      <div id="comments-{{ post._id }}" style="display:none;border-top:1px solid var(--bdr);background:var(--bg2)">
+        <div style="padding:12px 16px">
+          {% for c in (post.comments or []) %}
+          <div style="display:flex;gap:8px;align-items:flex-start;margin-bottom:8px">
+            {% if c.user_pic %}
+              <div style="position:relative;width:26px;height:26px;flex-shrink:0">
+                <img src="/static/uploads/profiles/{{ c.user_pic }}"
+                     alt="{{ (c.username or '?')[0].upper() }}"
+                     style="width:26px;height:26px;border-radius:50%;object-fit:cover;border:1px solid var(--bdr);display:block"
+                     onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">
+                <div class="av av1" style="width:26px;height:26px;font-size:10px;display:none;position:absolute;top:0;left:0">{{ (c.username or '?')[0].upper() }}</div>
+              </div>
+            {% else %}
+              <div class="av av1" style="width:26px;height:26px;font-size:10px;flex-shrink:0">{{ (c.username or '?')[0].upper() }}</div>
+            {% endif %}
+            <div style="background:var(--bg);border-radius:8px;padding:8px 12px;flex:1;border:1px solid var(--bdr)">
+              <span style="font-size:13px;font-weight:600;color:var(--t1)">{{ c.username }}</span>
+              <span style="font-size:14px;color:var(--t2);margin-left:8px">{{ c.content }}</span>
+            </div>
+          </div>
+          {% endfor %}
+          <form method="POST" action="{{ url_for('main.comment_post', post_id=post._id) }}" style="display:flex;gap:8px;margin-top:8px">
+            <input name="content" class="inp" style="flex:1;padding:8px 12px;font-size:14px;border-radius:8px" placeholder="Write a comment…" required>
+            <button type="submit" class="btn btn-p btn-sm" style="border-radius:8px">Post</button>
+          </form>
+        </div>
+      </div>
+    </div>
+    {% endfor %}
+
+    {% if has_next or has_prev %}
+    <div style="display:flex;gap:8px;justify-content:center;padding:16px 0">
+      {% if has_prev %}<a href="?page={{ prev_num }}" class="btn btn-s btn-sm">← Previous</a>{% endif %}
+      {% if has_next %}<a href="?page={{ next_num }}" class="btn btn-p btn-sm">Next →</a>{% endif %}
+    </div>
+    {% endif %}
+
+  {% else %}
+  <div class="card" style="padding:48px;text-align:center">
+    <div style="width:56px;height:56px;background:var(--bg3);border-radius:12px;display:flex;align-items:center;justify-content:center;margin:0 auto 16px">
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="var(--t4)" stroke-width="1.5"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg>
+    </div>
+    <div style="font-size:16px;font-weight:600;color:var(--t1);margin-bottom:6px">Your feed is empty</div>
+    <div style="color:var(--t3);font-size:14px;margin-bottom:20px">Connect with people to see their posts</div>
+    <div style="display:flex;gap:8px;justify-content:center">
+      <a href="{{ url_for('users.explore') }}" class="btn btn-p btn-sm">Find People</a>
+      <a href="{{ url_for('main.create_post') }}" class="btn btn-s btn-sm">Create Post</a>
+    </div>
+  </div>
+  {% endif %}
+</div>
+
+<!-- ═══ RIGHT SIDEBAR ═══ -->
+<div>
+  <div style="position:sticky;top:calc(var(--nh) + 20px);display:flex;flex-direction:column;gap:16px">
+
+    <!-- Trending -->
+    <div class="card" style="padding:16px">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px">
+        <div class="section-title" style="margin-bottom:0">Trending</div>
+        <div style="display:flex;align-items:center;gap:5px">
+          <div style="width:6px;height:6px;border-radius:50%;background:var(--green)"></div>
+          <span style="font-size:11px;color:var(--green);font-weight:600">LIVE</span>
+        </div>
+      </div>
+      {% set trends = ['#ZTRY','#AINetwork','#GenZ','#BuildTogether','#TechLife','#Connect'] %}
+      {% set trend_icons = ['🔥','🤖','⚡','🚀','💻','🌍'] %}
+      {% set wave_h1 = [6,10,4,8,12,5] %}
+      {% set wave_h2 = [10,6,12,5,8,10] %}
+      {% set wave_h3 = [7,12,6,10,4,8] %}
+      {% for t in trends %}
+      <div style="display:flex;align-items:center;gap:10px;padding:8px 6px;border-radius:6px;cursor:pointer;transition:all .18s;animation:fadeUp .3s ease both;animation-delay:{{ loop.index0 * 0.06 }}s" onmouseenter="this.style.background='var(--bg3)'" onmouseleave="this.style.background=''">
+        <span style="font-size:14px;width:20px;text-align:center">{{ trend_icons[loop.index0] }}</span>
+        <div style="flex:1;min-width:0">
+          <div style="font-size:13px;font-weight:600;color:var(--t1)">{{ t }}</div>
+          <div style="font-size:11px;color:var(--t4)">{{ loop.index * 11 + 3 }}.{{ loop.index }}k posts</div>
+        </div>
+        <div class="wavebar">
+          <span style="height:{{ wave_h1[loop.index0] }}px;animation-delay:{{ loop.index0 * 0.12 }}s"></span>
+          <span style="height:{{ wave_h2[loop.index0] }}px;animation-delay:{{ (loop.index0 * 0.18 + 0.1)|round(2) }}s"></span>
+          <span style="height:{{ wave_h3[loop.index0] }}px;animation-delay:{{ (loop.index0 * 0.09 + 0.2)|round(2) }}s"></span>
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+
+    <!-- AI Assistant -->
+    <div style="background:var(--t1);border-radius:12px;padding:16px;position:relative;overflow:hidden">
+      <div style="position:absolute;top:0;left:0;right:0;height:2px;background:var(--red)"></div>
+      <div style="display:flex;align-items:center;gap:8px;margin-bottom:10px">
+        <div style="width:28px;height:28px;background:var(--red);border-radius:6px;display:flex;align-items:center;justify-content:center">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
+        </div>
+        <span style="font-size:13px;font-weight:700;color:white">ZTRY AI</span>
+      </div>
+      <p style="font-size:12px;color:rgba(255,255,255,.55);line-height:1.55;margin-bottom:12px">Ask me to help write posts, suggest connections, or draft a reply.</p>
+      <a href="{{ url_for('chat.messages') }}" style="display:block;background:var(--red);color:white;text-align:center;padding:8px;border-radius:6px;font-size:13px;font-weight:600;text-decoration:none;transition:all .18s" onmouseenter="this.style.background='var(--red-h)'" onmouseleave="this.style.background='var(--red)'">Open AI Chat</a>
+    </div>
+
+    <!-- Quick actions -->
+    <div class="card" style="padding:14px">
+      <div class="section-title">Quick Actions</div>
+      <a href="{{ url_for('main.create_post') }}" class="btn btn-p" style="width:100%;justify-content:center;margin-bottom:8px;font-size:13px">Create Post</a>
+      <div class="btn btn-s" style="width:100%;justify-content:center;font-size:13px;cursor:pointer" onclick="document.getElementById('story-input').click()">Add Story</div>
+    </div>
+  </div>
+</div>
+
+</div>
+</div>
+
+<!-- Story Modal -->
+<div id="story-modal" style="display:none" class="modal-ov" onclick="if(event.target===this)closeStory()">
+  <div class="modal-box" style="max-width:420px;width:92%">
+    <div style="padding:12px 16px;display:flex;align-items:center;gap:10px;border-bottom:1px solid var(--bdr)">
+      <div id="sv-av" style="width:34px;height:34px;border-radius:50%;overflow:hidden;flex-shrink:0;background:var(--t1);display:flex;align-items:center;justify-content:center;font-weight:700;font-size:12px;color:white"></div>
+      <div><span id="sv-name" style="font-size:14px;font-weight:600;color:var(--t1)"></span><div style="font-size:11px;color:var(--t4)">Story</div></div>
+      <button onclick="closeStory()" style="margin-left:auto;background:var(--bg3);border:1px solid var(--bdr);border-radius:6px;width:28px;height:28px;color:var(--t3);cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:12px;transition:all .18s" onmouseenter="this.style.background='var(--red-bg)';this.style.color='var(--red)'" onmouseleave="this.style.background='var(--bg3)';this.style.color='var(--t3)'">✕</button>
+    </div>
+    <div id="sv-media" style="width:100%;min-height:280px;background:var(--bg3);display:flex;align-items:center;justify-content:center"></div>
+    <div id="sv-caption" style="padding:12px 16px;font-size:14px;color:var(--t2);display:none;border-top:1px solid var(--bdr)"></div>
+  </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+function likePost(id,btn){fetch(`/post/${id}/like`,{method:'POST'}).then(r=>r.json()).then(d=>{const liked=d.liked;const icon=btn.querySelector('svg');if(icon){icon.style.fill=liked?'currentColor':'none';btn.style.color=liked?'var(--red)':'var(--t3)';}const num=btn.querySelector('.like-num');if(num)num.textContent=d.count;if(liked){btn.style.animation='heartPop .35s ease';setTimeout(()=>btn.style.animation='',350);}});}
+function delPost(id){if(!confirm('Delete this post?'))return;fetch(`/post/${id}/delete`,{method:'POST'}).then(r=>r.json()).then(d=>{if(d.success){const el=document.getElementById('post-'+id);if(el){el.style.opacity='0';el.style.transition='opacity .25s';setTimeout(()=>el.remove(),250);}}});}
+function toggleComments(id){const el=document.getElementById('comments-'+id);if(!el)return;if(el.style.display==='none'){el.style.display='block';el.style.animation='fadeIn .2s ease both';}else el.style.display='none';}
+function openStory(id,filename,mediaType,username,userPic,caption){
+  const modal=document.getElementById('story-modal'),av=document.getElementById('sv-av');
+  if(userPic){av.innerHTML=`<img src="/static/uploads/profiles/${userPic}" style="width:100%;height:100%;object-fit:cover;border-radius:50%">`;}else{av.textContent=username?username[0].toUpperCase():'?';}
+  document.getElementById('sv-name').textContent=username||'';
+  const m=document.getElementById('sv-media');
+  if(mediaType==='video'){m.innerHTML=`<video autoplay controls style="width:100%;max-height:420px"><source src="/static/uploads/stories/${filename}"></video>`;}
+  else{m.innerHTML=`<img src="/static/uploads/stories/${filename}" style="width:100%;max-height:420px;object-fit:contain">`;}
+  const cap=document.getElementById('sv-caption');if(caption){cap.textContent=caption;cap.style.display='block';}else{cap.style.display='none';}
+  modal.style.display='flex';if(id)fetch(`/story/${id}/view`,{method:'POST'}).catch(()=>{});
+}
+function closeStory(){document.getElementById('story-modal').style.display='none';const m=document.getElementById('sv-media');if(m)m.innerHTML='';}
+</script>
+{% endblock %}

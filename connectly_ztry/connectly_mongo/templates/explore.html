@@ -1,0 +1,158 @@
+{% extends 'base.html' %}
+{% block title %}Explore — ZTRY{% endblock %}
+{% block content %}
+<style>
+/* Explore responsive overrides */
+.explore-filter-grid {
+  display: grid;
+  grid-template-columns: 1fr auto auto auto;
+  gap: 10px; align-items: end;
+}
+@media(max-width: 600px) {
+  .explore-filter-grid {
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+  }
+  .explore-filter-grid .filter-search { grid-column: 1 / -1; }
+  .explore-filter-grid .filter-btn   { grid-column: 1 / -1; }
+}
+@media(max-width: 400px) {
+  .explore-filter-grid { grid-template-columns: 1fr; }
+  .explore-filter-grid .filter-search,
+  .explore-filter-grid .filter-btn { grid-column: 1; }
+}
+.people-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 14px;
+}
+@media(max-width: 480px) {
+  .people-grid { grid-template-columns: repeat(2, 1fr); gap: 10px; }
+}
+@media(max-width: 340px) {
+  .people-grid { grid-template-columns: 1fr; }
+}
+</style>
+
+<div class="ccon" style="padding-bottom:32px;padding-top:8px">
+  <!-- Hero -->
+  <div style="margin-bottom:20px;padding:28px 20px;background:var(--t1);border-radius:12px;position:relative;overflow:hidden">
+    <div style="position:absolute;inset:0;background-image:linear-gradient(rgba(255,255,255,.04) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.04) 1px,transparent 1px);background-size:32px 32px"></div>
+    <div style="position:absolute;top:0;left:0;right:0;height:3px;background:var(--red)"></div>
+    <h1 style="font-size:22px;font-weight:700;color:white;letter-spacing:-.4px;margin-bottom:5px;position:relative">Discover People</h1>
+    <p style="color:rgba(255,255,255,.45);font-size:13px;position:relative">Find people who share your interests and ambitions</p>
+  </div>
+
+  <!-- Filters — fully responsive grid -->
+  <form method="GET" action="{{ url_for('users.explore') }}">
+    <div class="card" style="padding:14px;margin-bottom:20px">
+      <div class="explore-filter-grid">
+        <!-- Search — spans full width on small screens -->
+        <div class="filter-search">
+          <label class="lbl">Search</label>
+          <div style="position:relative">
+            <svg width="13" height="13" fill="none" stroke="var(--t4)" stroke-width="2" viewBox="0 0 24 24" style="position:absolute;left:10px;top:50%;transform:translateY(-50%);pointer-events:none"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+            <input name="q" type="text" value="{{ request.args.get('q','') }}" class="inp" style="padding-left:32px;font-size:14px" placeholder="Name or interest…">
+          </div>
+        </div>
+        <!-- Gender -->
+        <div>
+          <label class="lbl">Gender</label>
+          <select name="gender" class="inp" style="font-size:14px">
+            <option value="">All</option>
+            <option value="male"       {% if request.args.get('gender')=='male'       %}selected{% endif %}>Male</option>
+            <option value="female"     {% if request.args.get('gender')=='female'     %}selected{% endif %}>Female</option>
+            <option value="non-binary" {% if request.args.get('gender')=='non-binary' %}selected{% endif %}>Non-binary</option>
+          </select>
+        </div>
+        <!-- Goal -->
+        <div>
+          <label class="lbl">Goal</label>
+          <select name="goal" class="inp" style="font-size:14px">
+            <option value="">Any</option>
+            <option value="networking"   {% if request.args.get('goal')=='networking'   %}selected{% endif %}>Networking</option>
+            <option value="friendship"   {% if request.args.get('goal')=='friendship'   %}selected{% endif %}>Friendship</option>
+            <option value="collaboration"{% if request.args.get('goal')=='collaboration'%}selected{% endif %}>Collab</option>
+          </select>
+        </div>
+        <!-- Search button — spans full on mobile -->
+        <div class="filter-btn" style="display:flex;align-items:flex-end">
+          <button type="submit" class="btn btn-p" style="width:100%;border-radius:8px;padding:10px 14px;font-size:14px;justify-content:center">
+            <svg width="13" height="13" fill="none" stroke="white" stroke-width="2.5" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+            Search
+          </button>
+        </div>
+      </div>
+    </div>
+  </form>
+
+  {% if users %}
+  <div class="people-grid">
+    {% set banner_bgs = ['var(--t1)','#1f2937','#111827','#374151'] %}
+    {% for user in users %}
+    <div class="card card-lift fu" style="overflow:hidden;animation-delay:{{ loop.index0 * 0.04 }}s">
+      <!-- Banner -->
+      <div style="height:60px;position:relative;overflow:hidden;background:{{ banner_bgs[loop.index0 % 4] }}">
+        {% if user.banner_picture %}
+          <img src="/static/uploads/banners/{{ user.banner_picture }}" style="width:100%;height:100%;object-fit:cover" onerror="this.style.display='none'">
+        {% endif %}
+        <div style="position:absolute;top:0;left:0;right:0;height:2px;background:var(--red)"></div>
+        {% if user.is_online %}
+          <div style="position:absolute;top:8px;right:8px;display:flex;align-items:center;gap:3px">
+            <div style="width:5px;height:5px;border-radius:50%;background:var(--green)"></div>
+            <span style="font-size:9px;color:rgba(255,255,255,.6);font-weight:600">Online</span>
+          </div>
+        {% endif %}
+      </div>
+      <!-- Body -->
+      <div style="padding:0 12px 12px;text-align:center">
+        <div style="margin:-26px auto 8px;width:fit-content">
+          {% if user.profile_picture %}
+            <img src="/static/uploads/profiles/{{ user.profile_picture }}"
+                 alt="{{ user.username[0].upper() }}"
+                 style="width:52px;height:52px;border-radius:50%;object-fit:cover;border:3px solid var(--bg);box-shadow:var(--sh1)"
+                 onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">
+            <div class="av av{{ (loop.index%5)+1 }}" style="width:52px;height:52px;font-size:17px;border:3px solid var(--bg);box-shadow:var(--sh1);display:none">{{ user.username[0].upper() }}</div>
+          {% else %}
+            <div class="av av{{ (loop.index%5)+1 }}" style="width:52px;height:52px;font-size:17px;border:3px solid var(--bg);box-shadow:var(--sh1)">{{ user.username[0].upper() }}</div>
+          {% endif %}
+        </div>
+        <div style="font-size:13px;font-weight:600;color:var(--t1);margin-bottom:2px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">{{ user.username }}</div>
+        {% if user.location %}<div style="font-size:11px;color:var(--t4);margin-bottom:6px">{{ user.location }}</div>{% endif %}
+        {% if user.bio %}<div style="font-size:11px;color:var(--t3);line-height:1.5;margin-bottom:6px">{{ user.bio[:50] }}{% if user.bio|length > 50 %}…{% endif %}</div>{% endif %}
+        {% if user.relationship_goal %}<div style="margin-bottom:6px"><span class="tag tag-r" style="font-size:11px">{{ user.relationship_goal }}</span></div>{% endif %}
+        {% if user.interests and user.interests|length > 0 %}
+        <div style="display:flex;flex-wrap:wrap;gap:3px;justify-content:center;margin-bottom:8px">
+          {% for i in user.interests[:3] %}<span class="tag tag-g" style="font-size:10px;padding:2px 8px">{{ i }}</span>{% endfor %}
+        </div>
+        {% endif %}
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:5px">
+          <a href="{{ url_for('users.profile', user_id=user._id) }}" class="btn btn-s btn-xs" style="border-radius:6px;justify-content:center;font-size:12px">View</a>
+          <button onclick="connectUser('{{ user._id }}',this)" class="btn btn-p btn-xs" style="border-radius:6px;font-size:12px">Connect</button>
+        </div>
+      </div>
+    </div>
+    {% endfor %}
+  </div>
+  {% else %}
+  <div class="card" style="padding:48px 24px;text-align:center">
+    <div style="width:44px;height:44px;background:var(--bg3);border-radius:10px;display:flex;align-items:center;justify-content:center;margin:0 auto 12px">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--t4)" stroke-width="1.5"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+    </div>
+    <div style="font-size:15px;font-weight:600;color:var(--t1);margin-bottom:5px">No results found</div>
+    <div style="color:var(--t3);font-size:13px">Try different search terms</div>
+  </div>
+  {% endif %}
+</div>
+{% endblock %}
+{% block scripts %}
+<script>
+function connectUser(uid,btn){
+  fetch(`/match/${uid}`,{method:'POST'}).then(r=>r.json()).then(d=>{
+    if(d.success||d.error==='Already matched'){
+      btn.textContent='✓ Done';btn.style.background='var(--green)';btn.disabled=true;
+    }
+  });
+}
+</script>
+{% endblock %}

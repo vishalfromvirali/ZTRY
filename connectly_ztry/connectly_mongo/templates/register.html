@@ -1,0 +1,50 @@
+{% extends 'base.html' %}
+{% block title %}Join ZTRY{% endblock %}
+{% block content %}
+<style>
+.register-wrap {
+  min-height: calc(100dvh - var(--nh));
+  display: flex; align-items: center; justify-content: center;
+  padding: 20px 16px; background: var(--bg2);
+}
+.register-card { width: 100%; max-width: 500px; }
+.reg-grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 12px; }
+@media(max-width: 480px) {
+  .reg-grid-2 { grid-template-columns: 1fr; }
+  .register-wrap { align-items: flex-start; padding-top: 16px; }
+}
+</style>
+<div class="register-wrap">
+  <div class="register-card">
+    <div style="text-align:center;margin-bottom:20px">
+      <div style="display:inline-flex;align-items:center;gap:6px;margin-bottom:10px">
+        <span style="font-size:20px;font-weight:800;color:var(--t1);letter-spacing:-.5px">ZTRY</span>
+        <div style="width:6px;height:6px;border-radius:50%;background:var(--red)"></div>
+      </div>
+      <h1 style="font-size:22px;font-weight:700;color:var(--t1);letter-spacing:-.3px;margin-bottom:4px">Create your account</h1>
+      <p style="color:var(--t3);font-size:13px">Join 2M+ people on the intelligent social network</p>
+    </div>
+    <div class="card" style="padding:24px">
+      {% with messages = get_flashed_messages(with_categories=true) %}{% if messages %}{% for cat,msg in messages %}<div class="flash-{{cat}}">{{msg}}</div>{% endfor %}{% endif %}{% endwith %}
+      <form method="POST" action="{{ url_for('auth.register') }}">
+        <div class="reg-grid-2">
+          <div><label class="lbl">Username</label><input name="username" type="text" class="inp" placeholder="username" required autocomplete="username"></div>
+          <div><label class="lbl">Email</label><input name="email" type="email" class="inp" placeholder="you@email.com" autocomplete="email"></div>
+        </div>
+        <div class="reg-grid-2">
+          <div><label class="lbl">Password</label><input name="password" type="password" class="inp" placeholder="••••••••" required autocomplete="new-password"></div>
+          <div><label class="lbl">Confirm</label><input name="confirm_password" type="password" class="inp" placeholder="••••••••" required autocomplete="new-password"></div>
+        </div>
+        <div class="reg-grid-2">
+          <div><label class="lbl">Gender</label><select name="gender" class="inp"><option value="">Prefer not to say</option><option>Male</option><option>Female</option><option>Non-binary</option></select></div>
+          <div><label class="lbl">Goal</label><select name="relationship_goal" class="inp"><option value="">Select</option><option value="networking">Networking</option><option value="friendship">Friendship</option><option value="collaboration">Collaboration</option><option value="Study partner">Study Buddy</option></select></div>
+        </div>
+        <div style="margin-bottom:12px"><label class="lbl">Bio</label><textarea name="bio" class="inp" style="min-height:68px" placeholder="Tell people about yourself…"></textarea></div>
+        <div style="margin-bottom:18px"><label class="lbl">Interests <span style="color:var(--t4);font-size:11px;font-weight:400;text-transform:none;letter-spacing:0">(comma-separated)</span></label><input name="interests" type="text" class="inp" placeholder="AI, design, music, travel…"></div>
+        <button type="submit" class="btn btn-p" style="width:100%;font-size:15px;padding:12px;border-radius:9px;justify-content:center">Create Account</button>
+      </form>
+      <p style="text-align:center;margin-top:14px;font-size:14px;color:var(--t3)">Already have an account? <a href="{{ url_for('auth.login') }}" style="color:var(--red);font-weight:600;text-decoration:none">Sign in</a></p>
+    </div>
+  </div>
+</div>
+{% endblock %}

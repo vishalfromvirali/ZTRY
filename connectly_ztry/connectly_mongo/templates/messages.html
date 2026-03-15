@@ -1,0 +1,64 @@
+{% extends 'base.html' %}
+{% block title %}Messages — ZTRY{% endblock %}
+{% block content %}
+<div class="ccon" style="padding-bottom:32px;padding-top:8px">
+  <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:20px">
+    <h1 style="font-size:22px;font-weight:700;color:var(--t1);letter-spacing:-.3px">Messages</h1>
+    <span class="tag tag-g">{{ conversations|length }}</span>
+  </div>
+
+  {% if matched_users %}
+  <div style="margin-bottom:24px">
+    <div class="section-title">Connections</div>
+    <div style="display:flex;gap:14px;overflow-x:auto;padding-bottom:6px;scrollbar-width:none">
+      {% for u in matched_users %}
+      <a href="{{ url_for('chat.chat', user_id=u._id) }}" style="text-decoration:none;display:flex;flex-direction:column;align-items:center;gap:5px;flex-shrink:0">
+        <div style="position:relative">
+          {% if u.profile_picture %}<img src="/static/uploads/profiles/{{ u.profile_picture }}" alt="{{ u.username[0].upper() }}" style="width:52px;height:52px;border-radius:50%;object-fit:cover;border:2px solid var(--red)" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">
+          <div class="av av1" style="width:52px;height:52px;font-size:16px;display:none;border:2px solid var(--red)">{{ u.username[0].upper() }}</div>
+          {% else %}<div class="av av{{ (loop.index%5)+1 }}" style="width:52px;height:52px;font-size:16px;border:2px solid var(--red)">{{ u.username[0].upper() }}</div>{% endif %}
+          {% if u.is_online %}<div style="position:absolute;bottom:0;right:0;width:10px;height:10px;background:var(--green);border-radius:50%;border:2px solid var(--bg)"></div>{% endif %}
+        </div>
+        <span style="font-size:11px;color:var(--t3);font-weight:500;max-width:52px;text-align:center;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">{{ u.username }}</span>
+      </a>
+      {% endfor %}
+    </div>
+  </div>
+  {% endif %}
+
+  {% if conversations %}
+  <div style="display:flex;flex-direction:column;gap:2px;max-width:680px">
+    {% for conv in conversations %}
+    {% set u = conv.user %}{% set last = conv.last_msg %}{% set unread = conv.unread %}
+    <a href="{{ url_for('chat.chat', user_id=u._id) }}" class="card fu" style="text-decoration:none;display:flex;align-items:center;gap:12px;padding:12px 14px;border-radius:10px;animation-delay:{{ loop.index0 * 0.03 }}s;transition:all .18s" onmouseenter="this.style.background='var(--bg3)'" onmouseleave="this.style.background=''">
+      <div style="position:relative;flex-shrink:0">
+        {% if u.profile_picture %}<img src="/static/uploads/profiles/{{ u.profile_picture }}" alt="{{ u.username[0].upper() }}" style="width:48px;height:48px;border-radius:50%;object-fit:cover;border:1px solid var(--bdr)" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">
+          <div class="av av1" style="width:48px;height:48px;font-size:16px;display:none">{{ u.username[0].upper() }}</div>
+        {% else %}<div class="av av{{ (loop.index%5)+1 }}" style="width:48px;height:48px;font-size:16px">{{ u.username[0].upper() }}</div>{% endif %}
+        {% if u.is_online %}<div style="position:absolute;bottom:1px;right:1px;width:10px;height:10px;background:var(--green);border-radius:50%;border:2px solid var(--bg)"></div>{% endif %}
+      </div>
+      <div style="flex:1;min-width:0">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:2px">
+          <span style="font-size:14px;font-weight:{% if unread>0 %}700{% else %}600{% endif %};color:var(--t1)">{{ u.username }}</span>
+          {% if last and last.timestamp %}<span style="font-size:11px;color:var(--t4)">{% if last.timestamp.strftime is defined %}{{ last.timestamp.strftime('%b %d') }}{% endif %}</span>{% endif %}
+        </div>
+        {% if last %}
+        <div style="font-size:13px;color:{% if unread>0 %}var(--t2){% else %}var(--t4){% endif %};overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-weight:{% if unread>0 %}500{% else %}400{% endif %}">
+          {% if last.sender_id == current_user.id %}You: {% endif %}{{ last.content[:50] if last.content else '' }}{% if last.content and last.content|length>50 %}…{% endif %}
+        </div>
+        {% endif %}
+      </div>
+      {% if unread>0 %}<div style="min-width:18px;height:18px;padding:0 5px;background:var(--red);border-radius:9px;font-size:10px;font-weight:700;display:flex;align-items:center;justify-content:center;color:white;flex-shrink:0">{{ unread }}</div>{% endif %}
+    </a>
+    {% endfor %}
+  </div>
+  {% else %}
+  <div class="card" style="padding:56px;text-align:center;max-width:400px;margin:0 auto">
+    <div style="width:48px;height:48px;background:var(--bg3);border-radius:10px;display:flex;align-items:center;justify-content:center;margin:0 auto 14px"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--t4)" stroke-width="1.5"><path d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2z"/></svg></div>
+    <div style="font-size:15px;font-weight:600;color:var(--t1);margin-bottom:5px">No messages yet</div>
+    <div style="color:var(--t3);font-size:13px;margin-bottom:16px">Connect with people to start chatting</div>
+    <a href="{{ url_for('users.explore') }}" class="btn btn-p btn-sm">Find People</a>
+  </div>
+  {% endif %}
+</div>
+{% endblock %}

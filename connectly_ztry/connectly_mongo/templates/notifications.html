@@ -1,0 +1,41 @@
+{% extends 'base.html' %}
+{% block title %}Alerts — ZTRY{% endblock %}
+{% block content %}
+<div class="ccon" style="padding-bottom:32px;padding-top:8px">
+<div style="max-width:600px;margin:0 auto;padding:0 4px">
+  <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:18px">
+    <h1 style="font-size:20px;font-weight:700;color:var(--t1);letter-spacing:-.3px">Notifications</h1>
+    {% if notifications %}<span class="tag tag-r">{{ notifications|length }} new</span>{% endif %}
+  </div>
+  {% if notifications %}
+  <div style="display:flex;flex-direction:column;gap:6px">
+    {% for notif in notifications %}
+    <div class="card fu" style="padding:12px 14px;display:flex;align-items:center;gap:12px;animation-delay:{{ loop.index0 * 0.04 }}s">
+      <div style="width:38px;height:38px;border-radius:9px;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:15px;
+        {% if notif.type=='like' %}background:var(--red-bg)
+        {% elif notif.type=='comment' %}background:rgba(37,99,235,.08)
+        {% elif notif.type=='match' %}background:rgba(34,197,94,.08)
+        {% else %}background:var(--bg3){% endif %}">
+        {% if notif.type=='like' %}<svg width="15" height="15" viewBox="0 0 24 24" fill="var(--red)"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
+        {% elif notif.type=='comment' %}<svg width="15" height="15" viewBox="0 0 24 24" fill="#2563EB"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+        {% elif notif.type=='match' %}<svg width="15" height="15" viewBox="0 0 24 24" fill="var(--green)"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+        {% else %}<svg width="15" height="15" viewBox="0 0 24 24" fill="var(--t4)"><path d="M12 22c1.1 0 2-.9 2-2h-4c0 1.1.9 2 2 2zm6-6V11c0-3.07-1.64-5.64-4.5-6.32V4c0-.83-.67-1.5-1.5-1.5S10 3.17 10 4v.68C7.63 5.36 6 7.92 6 11v5l-2 2v1h16v-1l-2-2z"/></svg>{% endif %}
+      </div>
+      <div style="flex:1;min-width:0">
+        <div style="font-size:13px;color:var(--t1);line-height:1.5;overflow:hidden;text-overflow:ellipsis">{{ notif.content }}</div>
+        {% if notif.timestamp and notif.timestamp.strftime is defined %}<div style="font-size:11px;color:var(--t4);margin-top:2px">{{ notif.timestamp.strftime('%b %d at %H:%M') }}</div>{% endif %}
+      </div>
+      {% if not notif.is_read %}<div style="width:7px;height:7px;border-radius:50%;background:var(--red);flex-shrink:0"></div>{% endif %}
+    </div>
+    {% endfor %}
+  </div>
+  {% else %}
+  <div class="card" style="padding:48px 24px;text-align:center">
+    <div style="width:44px;height:44px;background:var(--bg3);border-radius:9px;display:flex;align-items:center;justify-content:center;margin:0 auto 12px"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--t4)" stroke-width="1.5"><path d="M12 22c1.1 0 2-.9 2-2h-4c0 1.1.9 2 2 2zm6-6V11c0-3.07-1.64-5.64-4.5-6.32V4c0-.83-.67-1.5-1.5-1.5S10 3.17 10 4v.68C7.63 5.36 6 7.92 6 11v5l-2 2v1h16v-1l-2-2z"/></svg></div>
+    <div style="font-size:15px;font-weight:600;color:var(--t1);margin-bottom:4px">All caught up</div>
+    <div style="color:var(--t3);font-size:13px">No new notifications</div>
+  </div>
+  {% endif %}
+</div>
+</div>
+{% endblock %}
