@@ -3,3 +3,5 @@ Flask
 Flask-SocketIO
 gunicorn
 gevent
+gevent==24.2.1
+gevent-websocket==0.10.1
