@@ -40,7 +40,7 @@ def create_app(cfg='development'):
     socketio.init_app(
         app,
         cors_allowed_origins='*',
-        async_mode='gevent',
+        async_mode='eventlet',
         ping_timeout=60,
         ping_interval=25,
         max_http_buffer_size=10_000_000,
