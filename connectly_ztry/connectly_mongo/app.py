@@ -32,9 +32,6 @@ def create_app(cfg='development'):
     from flask_pymongo import PyMongo
     mongo = PyMongo()
     mongo.init_app(app)
-    app.mongo = mongo          # store on app so blueprints can access
-
-    mongo.init_app(app)
     app.mongo = mongo
 
     bcrypt.init_app(app)
