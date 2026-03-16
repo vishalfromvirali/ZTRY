@@ -36,9 +36,9 @@ def create_app(cfg='development'):
 
     bcrypt.init_app(app)
     login_mgr.init_app(app)
-    socketio.init_app(app,
-        cors_allowed_origins='*',
-        async_mode='eventlet',
+   socketio.init_app(app,
+    cors_allowed_origins='*',
+    async_mode='gevent',
         ping_timeout=60,
         ping_interval=25,
         max_http_buffer_size=10_000_000,  # 10MB for file sharing
@@ -237,7 +237,8 @@ def _cleanup_orphans(mongo):
             print('[MongoDB] ✅ No orphan media found')
     except Exception as e:
         print(f'[MongoDB] Cleanup note: {e}')
+# Create global app instance for Gunicorn
+app = create_app(os.getenv("FLASK_ENV", "development"))
 
 if __name__ == '__main__':
-    app = create_app('development')
     socketio.run(app, debug=True, host='0.0.0.0', port=5000)
