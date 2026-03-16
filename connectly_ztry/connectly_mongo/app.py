@@ -34,17 +34,19 @@ def create_app(cfg='development'):
     mongo.init_app(app)
     app.mongo = mongo          # store on app so blueprints can access
 
-    bcrypt.init_app(app)
-    login_mgr.init_app(app)
-   socketio.init_app(app,
+ bcrypt.init_app(app)
+login_mgr.init_app(app)
+
+socketio.init_app(
+    app,
     cors_allowed_origins='*',
     async_mode='gevent',
-        ping_timeout=60,
-        ping_interval=25,
-        max_http_buffer_size=10_000_000,  # 10MB for file sharing
-        logger=False,
-        engineio_logger=False,
-    )
+    ping_timeout=60,
+    ping_interval=25,
+    max_http_buffer_size=10_000_000,
+    logger=False,
+    engineio_logger=False,
+)
     login_mgr.login_view = 'auth.login'
     login_mgr.login_message_category = 'info'
 
