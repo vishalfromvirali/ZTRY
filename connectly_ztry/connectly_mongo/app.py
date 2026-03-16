@@ -1,9 +1,12 @@
-import os, logging
+import eventlet
+eventlet.monkey_patch()
+
+import os
+import logging
 from flask import Flask
 from flask_socketio import SocketIO
 from flask_login import LoginManager
 from flask_bcrypt import Bcrypt
-
 socketio  = SocketIO()
 login_mgr = LoginManager()
 bcrypt    = Bcrypt()
